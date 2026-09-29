@@ -27,6 +27,7 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(58px,1
 .signature{margin-top:35px;font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:#77717d;opacity:0;animation:fade 1.5s 4.5s forwards}
 .message .signature{font-size:16px;letter-spacing:.2em}
 .controls{position:fixed;z-index:10;left:50%;bottom:30px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;opacity:0;animation:fade 1s 5s forwards}
+.controls.needs-playback{opacity:1;animation:none}
 .volume-controls{display:flex;align-items:center;gap:6px}
 .volume-controls button{width:38px;height:38px;padding:0;font-size:16px;letter-spacing:0}
 .volume-readout{min-width:36px;text-align:center;font-size:10px;color:#aaa4b0;font-variant-numeric:tabular-nums}
@@ -70,27 +71,54 @@ function resize(){dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight
 let t=0;function draw(){t+=.008;x.clearRect(0,0,w,h);for(const s of stars){s.y-=s.s;if(s.y<0)s.y=h;s.p+=.01;const a=s.a*(.55+.45*Math.sin(s.p));x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fillStyle=`rgba(220,205,240,${a})`;x.fill()}requestAnimationFrame(draw)}draw();
 const backgroundAudio=document.getElementById('background-music');
 const btn=document.getElementById('music');
-function updateMusicButton(){
-	const isPlaying=!backgroundAudio.paused;
-	btn.innerHTML=isPlaying?'Ⅱ &nbsp; Pause music':'♪ &nbsp; Play music';
-	btn.setAttribute('aria-label',isPlaying?'Pause background music':'Play background music');
-}
-backgroundAudio.addEventListener('play',updateMusicButton);
-backgroundAudio.addEventListener('pause',updateMusicButton);
-function startBackgroundMusic(){backgroundAudio.play().catch(updateMusicButton)}
-backgroundAudio.addEventListener('canplay',startBackgroundMusic,{once:true});
-window.addEventListener('load',startBackgroundMusic,{once:true});
-btn.addEventListener('click',()=>{
-	if(backgroundAudio.paused)startBackgroundMusic();
-	else backgroundAudio.pause();
-});
-startBackgroundMusic();
-const volumeReadout=document.getElementById('volume-readout');
-function changeVolume(amount){
-	backgroundAudio.volume=Math.max(0,Math.min(1,Math.round((backgroundAudio.volume+amount)*100)/100));
-	volumeReadout.value=`${Math.round(backgroundAudio.volume*100)}%`;
-}
-document.getElementById('volume-down').addEventListener('click',()=>changeVolume(-0.1));
-document.getElementById('volume-up').addEventListener('click',()=>changeVolume(0.1));
-</script>
-</body></html>
+const hint=document.getElementById('hint');
+const musicControls=document.querySelector('.controls');
+function removePlaybackGestureListeners(){
+	document.removeEventListener('pointerdown',startFromFirstGesture);
+    	document.removeEventListener('keydown',startFromFirstGesture);
+        }
+        function startFromFirstGesture(event){
+        	if(event.target.closest('#music'))return;
+            	startBackgroundMusic();
+                }
+                function updateMusicButton(){
+                	const isPlaying=!backgroundAudio.paused;
+                    	btn.innerHTML=isPlaying?'Ⅱ &nbsp; Pause music':'♪ &nbsp; Play music';
+                        	btn.setAttribute('aria-label',isPlaying?'Pause background music':'Play background music');
+                            	if(isPlaying){
+                                		btn.innerHTML='Ⅱ &nbsp; Pause music';
+                                        		hint.textContent='headphones recommended';
+                                                		musicControls.classList.remove('needs-playback');
+                                                        		removePlaybackGestureListeners();
+                                                                	}
+                                                                    }
+                                                                    backgroundAudio.addEventListener('play',updateMusicButton);
+                                                                    backgroundAudio.addEventListener('pause',updateMusicButton);
+                                                                    function startBackgroundMusic(){
+                                                                    	backgroundAudio.play().catch(()=>{
+                                                                        		updateMusicButton();
+                                                                                		btn.innerHTML='♪ &nbsp; Start music';
+                                                                                        		btn.setAttribute('aria-label','Start background music');
+                                                                                                		hint.textContent='tap anywhere to start music';
+                                                                                                        		musicControls.classList.add('needs-playback');
+                                                                                                                	});
+                                                                                                                    }
+                                                                                                                    document.addEventListener('pointerdown',startFromFirstGesture);
+                                                                                                                    document.addEventListener('keydown',startFromFirstGesture);
+                                                                                                                    backgroundAudio.addEventListener('canplay',startBackgroundMusic,{once:true});
+                                                                                                                    window.addEventListener('load',startBackgroundMusic,{once:true});
+                                                                                                                    btn.addEventListener('click',()=>{
+                                                                                                                    	if(backgroundAudio.paused)startBackgroundMusic();
+                                                                                                                        	else backgroundAudio.pause();
+                                                                                                                            });
+                                                                                                                            startBackgroundMusic();
+                                                                                                                            const volumeReadout=document.getElementById('volume-readout');
+                                                                                                                            function changeVolume(amount){
+                                                                                                                            	backgroundAudio.volume=Math.max(0,Math.min(1,Math.round((backgroundAudio.volume+amount)*100)/100));
+                                                                                                                                	volumeReadout.value=`${Math.round(backgroundAudio.volume*100)}%`;
+                                                                                                                                    }
+                                                                                                                                    document.getElementById('volume-down').addEventListener('click',()=>changeVolume(-0.1));
+                                                                                                                                    document.getElementById('volume-up').addEventListener('click',()=>changeVolume(0.1));
+                                                                                                                                    </script>
+                                                                                                                                    </body></html>
+                                                                                                                                    
