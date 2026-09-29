@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07070b">
+<meta name="description" content="A silent whisper without goodbye.">
+<link rel="icon" type="image/png" href="./image.png">
+<title>Goodbye</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#050509;--text:#eeeaf0;--muted:#aaa4b0;--accent:#c9a7ff;--accent2:#7b6a9d}
+html,body{width:100%;min-height:100%;overflow-x:hidden;overflow-y:auto;background:var(--bg);color:var(--text)}
+body{font-family:Inter,system-ui,sans-serif;cursor:default}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.noise{position:fixed;inset:-50%;z-index:2;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");animation:noise .18s steps(2) infinite}
+.vignette{position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(circle at center,transparent 25%,rgba(0,0,0,.55) 100%)}
+main{position:relative;z-index:5;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:28px}
+.card{width:min(920px,100%);text-align:center;position:relative;padding:58px 35px 45px;animation:rise 1.6s cubic-bezier(.16,1,.3,1) both}
+.eyebrow{font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);margin-bottom:28px;opacity:0;animation:fade 1s 1s forwards}
+h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(58px,10vw,125px);line-height:.78;letter-spacing:-.045em;margin-bottom:35px;background:linear-gradient(120deg,#fff 10%,#cdb8ed 45%,#74617f 80%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px rgba(201,167,255,.13));animation:titleGlow 5s ease-in-out infinite alternate}
+.rule{width:0;height:1px;margin:0 auto 35px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:line 1.4s 1.2s forwards}
+.message{font-family:'Cormorant Garamond',serif;font-size:clamp(23px,3.2vw,34px);line-height:1.45;font-weight:400;max-width:760px;margin:auto;color:#e6e0e9;min-height:150px}
+.message .line{display:block;opacity:0;transform:translateY(12px);animation:words 1.2s forwards}
+.message .line:nth-child(1){animation-delay:1.8s}.message .line:nth-child(2){animation-delay:2.45s}.message .line:nth-child(3){animation-delay:3.1s}.message .line:nth-child(4){animation-delay:3.75s}
+.signature{margin-top:35px;font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:#77717d;opacity:0;animation:fade 1.5s 4.5s forwards}
+.message .signature{font-size:16px;letter-spacing:.2em}
+.controls{position:fixed;z-index:10;left:50%;bottom:30px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;opacity:0;animation:fade 1s 5s forwards}
+.volume-controls{display:flex;align-items:center;gap:6px}
+.volume-controls button{width:38px;height:38px;padding:0;font-size:16px;letter-spacing:0}
+.volume-readout{min-width:36px;text-align:center;font-size:10px;color:#aaa4b0;font-variant-numeric:tabular-nums}
+button{border:1px solid rgba(201,167,255,.22);background:rgba(255,255,255,.035);color:#ddd5e7;border-radius:999px;padding:12px 18px;font:400 11px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(12px);transition:.35s ease;box-shadow:0 0 0 rgba(201,167,255,0)}
+button:hover{border-color:rgba(201,167,255,.6);background:rgba(201,167,255,.08);box-shadow:0 0 25px rgba(201,167,255,.12);transform:translateY(-2px)}
+#hint{font-size:10px;color:#77717d;letter-spacing:.08em}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.13;pointer-events:none;z-index:1}.orb.a{width:350px;height:350px;background:#7754a8;left:-100px;top:10%;animation:drift 13s ease-in-out infinite}.orb.b{width:300px;height:300px;background:#364c84;right:-80px;bottom:0;animation:drift 16s 2s ease-in-out infinite reverse}
+@keyframes rise{from{opacity:0;transform:translateY(35px) scale(.98)}to{opacity:1;transform:none}}@keyframes fade{to{opacity:1}}@keyframes line{to{width:min(420px,65vw)}}@keyframes words{to{opacity:1;transform:none}}@keyframes titleGlow{to{filter:drop-shadow(0 0 38px rgba(201,167,255,.25))}}@keyframes drift{50%{transform:translate(90px,-50px) scale(1.15)}}@keyframes noise{0%{transform:translate(0,0)}25%{transform:translate(3%,-2%)}50%{transform:translate(-2%,3%)}75%{transform:translate(2%,2%)}100%{transform:translate(-3%,-2%)}}
+@media(max-width:600px){main{padding:18px}.card{padding:30px 10px 60px}.eyebrow{letter-spacing:.3em}.message{font-size:25px}.controls{bottom:18px;gap:7px}.volume-controls{gap:4px}.volume-controls button{width:36px;height:36px}.volume-readout{min-width:32px}.orb{filter:blur(55px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<audio id="background-music" src="./the_mountain-farewell-piano-146119.mp3" autoplay loop preload="auto"></audio>
+<canvas id="stars"></canvas><div class="orb a"></div><div class="orb b"></div><div class="noise"></div><div class="vignette"></div>
+<main><section class="card" aria-label="A final message">
+<div class="eyebrow">one last whisper</div>
+<h1 title="Sorry">Without<br>Goodbye</h1>
+<div class="rule"></div>
+<div class="message">
+<span class="line" title="Sorry">Thank you to those who gave me love and care.</span>
+<span class="line" title="Sorry">And I’m sorry to those I may have hurt.</span>
+<span class="line" title="Sorry">I won’t come back, and I won’t disturb your life again.</span>
+<span class="line" title="Sorry">A silent whisper… without goodbye.<br><span class="signature" title="Gratefully, Abishin">Gratefully, Abishin</span></span>
+</div>
+<div class="signature">let the silence speak</div>
+</section></main>
+<div class="controls">
+<button id="music" type="button" aria-label="Play background music">♪ &nbsp; Play music</button>
+<div class="volume-controls" role="group" aria-label="Background music volume">
+<button id="volume-down" type="button" aria-label="Decrease background music volume" title="Decrease volume">−</button>
+<output id="volume-readout" class="volume-readout" aria-live="polite">100%</output>
+<button id="volume-up" type="button" aria-label="Increase background music volume" title="Increase volume">+</button>
+</div>
+<span id="hint">headphones recommended</span>
+</div>
+<script>
+// Starfield / drifting particles
+const c=document.getElementById('stars'),x=c.getContext('2d');let w,h,dpr,stars=[];
+function resize(){dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px';x.setTransform(dpr,0,0,dpr,0,0);stars=Array.from({length:Math.min(180,Math.floor(w*h/8500))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.4+.15,a:Math.random()*.7+.1,s:Math.random()*.18+.03,p:Math.random()*Math.PI*2}))}resize();addEventListener('resize',resize);
+let t=0;function draw(){t+=.008;x.clearRect(0,0,w,h);for(const s of stars){s.y-=s.s;if(s.y<0)s.y=h;s.p+=.01;const a=s.a*(.55+.45*Math.sin(s.p));x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fillStyle=`rgba(220,205,240,${a})`;x.fill()}requestAnimationFrame(draw)}draw();
+const backgroundAudio=document.getElementById('background-music');
+const btn=document.getElementById('music');
+function updateMusicButton(){
+	const isPlaying=!backgroundAudio.paused;
+	btn.innerHTML=isPlaying?'Ⅱ &nbsp; Pause music':'♪ &nbsp; Play music';
+	btn.setAttribute('aria-label',isPlaying?'Pause background music':'Play background music');
+}
+backgroundAudio.addEventListener('play',updateMusicButton);
+backgroundAudio.addEventListener('pause',updateMusicButton);
+function startBackgroundMusic(){backgroundAudio.play().catch(updateMusicButton)}
+backgroundAudio.addEventListener('canplay',startBackgroundMusic,{once:true});
+window.addEventListener('load',startBackgroundMusic,{once:true});
+btn.addEventListener('click',()=>{
+	if(backgroundAudio.paused)startBackgroundMusic();
+	else backgroundAudio.pause();
+});
+startBackgroundMusic();
+const volumeReadout=document.getElementById('volume-readout');
+function changeVolume(amount){
+	backgroundAudio.volume=Math.max(0,Math.min(1,Math.round((backgroundAudio.volume+amount)*100)/100));
+	volumeReadout.value=`${Math.round(backgroundAudio.volume*100)}%`;
+}
+document.getElementById('volume-down').addEventListener('click',()=>changeVolume(-0.1));
+document.getElementById('volume-up').addEventListener('click',()=>changeVolume(0.1));
+</script>
+</body></html>
